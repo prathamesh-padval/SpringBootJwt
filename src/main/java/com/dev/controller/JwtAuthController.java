@@ -1,5 +1,6 @@
 package com.dev.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,17 @@ public class JwtAuthController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+		
+		System.out.println("User :: "+authenticationRequest);
+		
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		final UserDetails userDetails = jwtDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
-		return ResponseEntity.ok(new JwtResponse("Bearer "+token, new Date().toString()));
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy, HH:mm");
+		
+		return ResponseEntity.ok(new JwtResponse("Bearer "+token, dateFormat.format(new Date().getTime())));
 
 	}
 
